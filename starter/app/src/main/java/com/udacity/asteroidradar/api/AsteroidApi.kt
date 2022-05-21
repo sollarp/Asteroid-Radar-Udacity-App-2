@@ -19,7 +19,7 @@ import kotlin.reflect.jvm.internal.impl.load.java.Constant
 
 interface AsteroidApi {
 
-        @GET("neo/rest/v1/feed?start_date=2022-05-14&end_date=2022-05-14&api_key=Wa0fS9OIhKOc7Zf9Ohb4UUuwHTBCUkN6FMmtnNX2")
+        @GET("neo/rest/v1/feed?start_date=2022-05-15&end_date=2022-05-21&api_key=Wa0fS9OIhKOc7Zf9Ohb4UUuwHTBCUkN6FMmtnNX2")
         suspend fun getAsteroids(): String
     }
 

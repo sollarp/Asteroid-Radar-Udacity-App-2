@@ -1,16 +1,16 @@
 package com.udacity.asteroidradar.main
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.api.AsteroidApi
 import com.udacity.asteroidradar.api.MarsApi
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val TAG = "MyActivity"
 
 
@@ -22,6 +22,11 @@ class MainViewModel : ViewModel() {
     /**
      * Call getMarsPhotos() on init so we can display status immediately.
      */
+    //private val _property = MutableLiveData<MarsProperty>()
+    private val _dome = MutableLiveData<String>()
+    val dome: LiveData<String>
+        get() = _dome
+
     init {
         getPosts()
     }
@@ -33,9 +38,9 @@ class MainViewModel : ViewModel() {
                 val listResult = MarsApi.retrofitService.getAsteroids()
 
                 val jsonAsteroids = JSONObject(listResult)
-                val dome = parseAsteroidsJsonResult(jsonAsteroids)
-                //_status.value = "Success: ${getResult} Mars photos retrieved"
-                Log.d(TAG, "my Message dome:  ${dome}")
+                val getDome = parseAsteroidsJsonResult(jsonAsteroids)
+                _dome.value = "Success: ${getDome} Mars photos retrieved"
+                Log.d(TAG, "my Message dome:  ${getDome}")
 
 
             } catch (e: Exception) {

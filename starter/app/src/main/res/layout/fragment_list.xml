@@ -8,6 +8,13 @@
         <variable
             name="asteroid"
             type="com.udacity.asteroidradar.Asteroid" />
+        <variable
+            name="clickListener"
+            type="com.udacity.asteroidradar.main.AsteroidItemsAdapter.AsteroidListener" />
+        <variable
+            name="viewModel"
+            type="com.udacity.asteroidradar.main.MainViewModel" />
+
 
     </data>
 
@@ -16,7 +23,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:onClick="@{() -> clickListener.onClick(asteroid)}">
 
         <TextView
             android:id="@+id/name"
