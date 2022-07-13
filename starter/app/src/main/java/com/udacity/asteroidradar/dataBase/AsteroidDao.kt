@@ -32,6 +32,11 @@ interface AsteroidDao {
 
 //    @Insert(onConflict = OnConflictStrategy.REPLACE)
 //    suspend fun insertTodaysImage(pictureEntity: PictureEntity)
+//    @Query("select * from DatabasePictureOfDay")
+//    fun getPictureOfDay(): DatabasePictureOfDay
+
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    fun insertPOD(pictureOfDay: DatabasePictureOfDay)
 
 }
 

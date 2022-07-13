@@ -8,13 +8,12 @@ import androidx.room.RoomDatabase
 @Database(
     entities = [
         AsteroidEntity::class,
-        //DatabasePictureOfDay::class
+        DatabasePictureOfDay::class
                ],
         version = 1,
 )
 abstract class AsteroidDb : RoomDatabase() {
     abstract val asteroidDao: AsteroidDao
-    //abstract val imageDao: ImageDao
 
 
 

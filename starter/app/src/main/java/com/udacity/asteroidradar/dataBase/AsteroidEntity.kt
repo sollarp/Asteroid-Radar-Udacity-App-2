@@ -53,14 +53,14 @@ data class DatabasePictureOfDay(
     @PrimaryKey
     val url: String,
     val date: String,
-    @Json(name = "media_type") val mediaType:String,
     val title: String,
 )
+
 
 //convert db object to domain object
 fun DatabasePictureOfDay.asDomainModelPicture(): PictureOfDay {
     return PictureOfDay(
-        mediaType = this.mediaType,
+        //mediaType = this.mediaType,
         title = this.title,
         url = this.url,
         date = this.date
