@@ -11,26 +11,36 @@ import com.udacity.asteroidradar.databinding.FragmentListBinding
 
 private val TAG = "SecondActivity"
 
-class AsteroidItemsAdapter(private val listener: AsteroidListener):
+class AsteroidItemsAdapter():
     ListAdapter<Asteroid, AsteroidItemsAdapter.AsteroidViewHolder>(AsteroidDiffCallback()) {
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AsteroidViewHolder {
         Log.d(TAG, "Failure: action happened in Adapter")
-            return AsteroidViewHolder.from(parent)
+        val itemBinding = FragmentListBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent, false)
+
+        return AsteroidViewHolder(itemBinding)
     }
 
     override fun onBindViewHolder(holder: AsteroidViewHolder, position: Int) {
-        val asteroid = getItem(position)
+        holder.onBind(getItem(position))
         Log.d(TAG, "Failure: action happened in Adapter")
 
-        holder.onBind(asteroid, listener)
     }
 
-    class AsteroidViewHolder private constructor(val binding: FragmentListBinding) :
+   /* override fun getItemCount(): Int {
+        return Asteroid.size
+    }*/
+
+    class AsteroidViewHolder (val binding: FragmentListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun onBind(asteroid: Asteroid, asteroidClickListener: AsteroidListener) {
-            binding.asteroid = asteroid
-            binding.clickListener = asteroidClickListener
+        private lateinit var _asteroid: Asteroid
+
+
+        fun onBind(asteroid: Asteroid) {
+            _asteroid = asteroid
+            binding.asteroid = _asteroid
             binding.executePendingBindings()
 
         }
@@ -49,7 +59,7 @@ class AsteroidItemsAdapter(private val listener: AsteroidListener):
 
     class AsteroidDiffCallback : DiffUtil.ItemCallback<Asteroid>() {
         override fun areItemsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem == newItem
         }
 
         override fun areContentsTheSame(oldItem: Asteroid, newItem: Asteroid): Boolean {

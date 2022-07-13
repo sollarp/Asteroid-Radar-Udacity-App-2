@@ -1,5 +1,7 @@
 package com.udacity.asteroidradar.api
 
+import android.annotation.SuppressLint
+import android.util.Log
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
 import org.json.JSONObject
@@ -7,10 +9,15 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+private val TAG = "MyActivity"
+
+
 fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     val nearEarthObjectsJson = jsonResult.getJSONObject("near_earth_objects")
 
     val asteroidList = ArrayList<Asteroid>()
+    // Store asteroids in List example
+    val list: MutableList<Asteroid> = mutableListOf()
 
     val nextSevenDaysFormattedDates = getNextSevenDaysFormattedDates()
     for (formattedDate in nextSevenDaysFormattedDates) {
@@ -38,11 +45,11 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
             asteroidList.add(asteroid)
         }
     }
-
     return asteroidList
 }
 
-private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
+@SuppressLint("WeekBasedYear")
+fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     val formattedDateList = ArrayList<String>()
 
     val calendar = Calendar.getInstance()
@@ -52,6 +59,8 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
         formattedDateList.add(dateFormat.format(currentTime))
         calendar.add(Calendar.DAY_OF_YEAR, 1)
     }
+    Log.d(TAG, "next sevenDays: ${formattedDateList}")
+
 
     return formattedDateList
 }
