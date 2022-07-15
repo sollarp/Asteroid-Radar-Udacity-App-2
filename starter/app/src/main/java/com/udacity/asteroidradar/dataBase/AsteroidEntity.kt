@@ -58,8 +58,8 @@ data class DatabasePictureOfDay(
 
 
 //convert db object to domain object
-fun DatabasePictureOfDay.asDomainModelPicture(): PictureOfDay {
-    return PictureOfDay(
+fun DatabasePictureOfDay.asDomainModelPicture(): DatabasePictureOfDay {
+    return DatabasePictureOfDay(
         //mediaType = this.mediaType,
         title = this.title,
         url = this.url,

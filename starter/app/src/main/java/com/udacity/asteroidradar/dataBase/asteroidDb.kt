@@ -1,9 +1,13 @@
 package com.udacity.asteroidradar.dataBase
 
+// Room step 2 add entities
+// Room step3 add abstract val
+// Change version number if schema updated
+
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.lifecycle.LiveData
+import androidx.room.*
+
 
 @Database(
     entities = [
@@ -14,6 +18,7 @@ import androidx.room.RoomDatabase
 )
 abstract class AsteroidDb : RoomDatabase() {
     abstract val asteroidDao: AsteroidDao
+    abstract val imageDao: ImageDao
 
 
 

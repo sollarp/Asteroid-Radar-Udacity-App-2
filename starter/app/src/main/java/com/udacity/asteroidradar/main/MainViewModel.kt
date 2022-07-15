@@ -1,14 +1,12 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.*
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import coil.request.ImageRequest
-import coil.request.SuccessResult
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.api.MarsApi
@@ -25,7 +23,7 @@ import java.time.format.DateTimeFormatter
 
 class MainViewModel(
     private val dataBase: AsteroidDao,
-    //private val imageDb: ImageDao,
+    private val imageDb: ImageDao,
     application: Application
 ) : AndroidViewModel(application), ImageLoaderFactory {
     private val TAG = "MyActivity"
@@ -60,38 +58,51 @@ class MainViewModel(
     }
 
     private suspend fun getAsteroidsUpdate() {
+        try {
 
-        val listResult = MarsApi.retrofitService.getAsteroids(startDate, currentDate)
-        val pictureOfDay = MarsApi.retrofitService.getImageOfTheDay()
+            val listResult = MarsApi.retrofitService.getAsteroids(startDate, currentDate)
+            val pictureOfDay = MarsApi.retrofitService.getImageOfTheDay()
 
-        //val pictureOfDayBitmap = getBitmap(pictureOfDay)
-        //Log.d(TAG, "start end: ${pictureOfDayBitmap}")
-        val jsonAsteroids = JSONObject(listResult)
-        getDome = parseAsteroidsJsonResult(jsonAsteroids)
-        val networkAsteroidList = getDome.map {
-            Asteroid(
-                it.id,
-                it.codename,
-                it.closeApproachDate,
-                it.absoluteMagnitude,
-                it.estimatedDiameter,
-                it.relativeVelocity,
-                it.distanceFromEarth,
-                it.isPotentiallyHazardous
-            )
+            //val pictureOfDayBitmap = getBitmap(pictureOfDay)
+            //Log.d(TAG, "start end: ${pictureOfDayBitmap}")
+            val jsonAsteroids = JSONObject(listResult)
+            getDome = parseAsteroidsJsonResult(jsonAsteroids)
+            val networkAsteroidList = getDome.map {
+                Asteroid(
+                    it.id,
+                    it.codename,
+                    it.closeApproachDate,
+                    it.absoluteMagnitude,
+                    it.estimatedDiameter,
+                    it.relativeVelocity,
+                    it.distanceFromEarth,
+                    it.isPotentiallyHazardous
+                )
+            }
+            insertAll(networkAsteroidList)
+            insertPictureInDatabase(pictureOfDay)
+            //getMostRecentPictureFromDatabase()
+        } catch (e: Exception) {
+            Toast.makeText(getApplication(),"Error Loading",Toast.LENGTH_SHORT).show()
         }
-        insertAll(networkAsteroidList)
-        //insertPictureInDatabase(pictureOfDay)
-        //getMostRecentPictureFromDatabase()
     }
+    
+    private val _pictureOfDay: LiveData<DatabasePictureOfDay> =
+        Transformations.map(imageDb.getPictureOfDay()){
+            it.asDomainModelPicture()
+        }
+    val pictureOfDay: LiveData<DatabasePictureOfDay>
+        get() = _pictureOfDay
 
-//    suspend fun getMostRecentPictureFromDatabase() {
-//        Log.d(TAG, "data base get ${pictureData.getMostRecentPicture()}")
-//        pictureData.getMostRecentPicture()
-//    }
+
+
+    fun getMostRecentPictureFromDatabase(): LiveData<String> {
+        val getUrl = imageDb.getPictureOfDay().map { it.asDomainModelPicture().url}
+        return getUrl
+    }
     suspend fun insertPictureInDatabase(databasePictureOfDay: DatabasePictureOfDay) {
     withContext(Dispatchers.IO) {
-       // imageDb.insertPOD(databasePictureOfDay.asDomainModelPicture())
+       imageDb.insertPOD(databasePictureOfDay.asDomainModelPicture())
     }
     }
 

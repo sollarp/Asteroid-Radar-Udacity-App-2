@@ -1,5 +1,7 @@
 package com.udacity.asteroidradar.dataBase
 
+// ROOM step 1 careful of suspending @Insert
+
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
@@ -13,6 +15,6 @@ interface ImageDao{
     fun getPictureOfDay(): LiveData<DatabasePictureOfDay>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPOD(pictureOfDay: com.udacity.asteroidradar.PictureOfDay)
+    fun insertPOD(pictureOfDay: DatabasePictureOfDay)
 
 }

@@ -25,10 +25,10 @@ class MainFragment() : Fragment() {
         val application = requireNotNull(this.activity).application
 
         val dataSource = AsteroidDb.getInstance(application).asteroidDao
-        //val imageSource = AsteroidDb.getInstance(application).imageDao
+        val imageSource = AsteroidDb.getInstance(application).imageDao
 
         val viewModelFactory = AsteroidViewModelFactory(dataSource,
-                                                        //imageSource,
+                                                        imageSource,
                                                         application)
 
         val sleepTrackerViewModel =
