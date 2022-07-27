@@ -15,16 +15,18 @@ import com.udacity.asteroidradar.main.AsteroidViewModelFactory
 import com.udacity.asteroidradar.main.MainViewModel
 
 class DetailFragment : Fragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         val binding = FragmentDetailBinding.inflate(inflater)
         binding.lifecycleOwner = this
 
-
+        val asteroid = DetailFragmentArgs.fromBundle(requireArguments()).selectedAsteroid
+        binding.asteroid = asteroid
         binding.helpButton.setOnClickListener {
             displayAstronomicalUnitExplanationDialog()
         }
-
         return binding.root
     }
 

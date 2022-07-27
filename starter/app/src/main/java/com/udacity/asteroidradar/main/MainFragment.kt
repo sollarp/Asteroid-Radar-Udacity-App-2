@@ -1,50 +1,48 @@
 package com.udacity.asteroidradar.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.dataBase.AsteroidDb
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 
-class MainFragment() : Fragment() {
 
+class MainFragment() : Fragment() {
 
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?,
+    ): View? {
         val binding = FragmentMainBinding.inflate(inflater)
-        val adapter = AsteroidItemsAdapter()
-
-        //binding.viewModel = viewModel
-
         val application = requireNotNull(this.activity).application
-
         val dataSource = AsteroidDb.getInstance(application).asteroidDao
         val imageSource = AsteroidDb.getInstance(application).imageDao
 
-        val viewModelFactory = AsteroidViewModelFactory(dataSource,
-                                                        imageSource,
-                                                        application)
-
-        val sleepTrackerViewModel =
+        val viewModelFactory = AsteroidViewModelFactory(
+            dataSource,
+            imageSource,
+            application
+        )
+        val mainViewModel =
             ViewModelProvider(
                 this, viewModelFactory).get(MainViewModel::class.java)
 
-
-        binding.asteroidRecycler.adapter = adapter
-
-        viewModel.dome.observe(viewLifecycleOwner, { items ->
-            adapter.submitList(items)
-        })
+        binding.asteroidRecycler.adapter =
+            AsteroidItemsAdapter(AsteroidItemsAdapter.OnClickListener {
+                this.findNavController()
+                    .navigate(MainFragmentDirections.actionShowDetail(it))
+            })
         binding.lifecycleOwner = this
-        binding.viewModel = sleepTrackerViewModel
-
-
+        binding.viewModel = mainViewModel
         return binding.root
     }
 

@@ -1,8 +1,7 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
-import android.content.Context
-import android.util.Log
+
 import android.widget.Toast
 import androidx.lifecycle.*
 import coil.ImageLoader
@@ -24,30 +23,22 @@ import java.time.format.DateTimeFormatter
 class MainViewModel(
     private val dataBase: AsteroidDao,
     private val imageDb: ImageDao,
-    application: Application
+    application: Application,
 ) : AndroidViewModel(application), ImageLoaderFactory {
-    private val TAG = "MyActivity"
 
     private val currentDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE)
     private val startDate = LocalDateTime.now().plusDays(7).format(DateTimeFormatter.ISO_DATE)
-    lateinit var getListBack : List<Asteroid>
+    lateinit var getListBack: List<Asteroid>
+    lateinit var getImageBack: PictureOfDay
+    var getParsedAsteroids = ArrayList<Asteroid>()
 
+    val _parseData = MutableLiveData<List<Asteroid>>()
+    val parseData: LiveData<List<Asteroid>>
+        get() = _parseData
 
-    // The internal MutableLiveData that stores the status of the most recent request
-    private val _status = MutableLiveData<String>()
-    var getDome = ArrayList<Asteroid>()
-
-    // The external immutable LiveData for the request status
-    val status: LiveData<String> = _status
-
-    /**
-     * Call getMarsPhotos() on init so we can display status immediately.
-     */
-    //private val _property = MutableLiveData<MarsProperty>()
-    val _dome = MutableLiveData<List<Asteroid>>()
-    val dome: LiveData<List<Asteroid>>
-        get() = _dome
-
+    private val _pictureOfDay = MutableLiveData<PictureOfDay>()
+    val pictureOfDay: LiveData<PictureOfDay>
+        get() = _pictureOfDay
 
     init {
         viewModelScope.launch {
@@ -59,15 +50,12 @@ class MainViewModel(
 
     private suspend fun getAsteroidsUpdate() {
         try {
-
             val listResult = MarsApi.retrofitService.getAsteroids(startDate, currentDate)
             val pictureOfDay = MarsApi.retrofitService.getImageOfTheDay()
-
             //val pictureOfDayBitmap = getBitmap(pictureOfDay)
-            //Log.d(TAG, "start end: ${pictureOfDayBitmap}")
             val jsonAsteroids = JSONObject(listResult)
-            getDome = parseAsteroidsJsonResult(jsonAsteroids)
-            val networkAsteroidList = getDome.map {
+            getParsedAsteroids = parseAsteroidsJsonResult(jsonAsteroids)
+            val networkAsteroidList = getParsedAsteroids.map {
                 Asteroid(
                     it.id,
                     it.codename,
@@ -81,29 +69,32 @@ class MainViewModel(
             }
             insertAll(networkAsteroidList)
             insertPictureInDatabase(pictureOfDay)
-            //getMostRecentPictureFromDatabase()
+            getPictureFromDatabase()
         } catch (e: Exception) {
-            Toast.makeText(getApplication(),"Error Loading",Toast.LENGTH_SHORT).show()
+            Toast.makeText(getApplication(), "Error Loading", Toast.LENGTH_SHORT).show()
         }
     }
-    
-    private val _pictureOfDay: LiveData<DatabasePictureOfDay> =
-        Transformations.map(imageDb.getPictureOfDay()){
-            it.asDomainModelPicture()
+
+    private suspend fun getPictureFromDatabase() {
+        withContext(Dispatchers.IO) {
+            val gettingImage = imageDb.getPictureOfDay()
+            getImageBack = gettingImage.asDomainModelPicture()
         }
-    val pictureOfDay: LiveData<DatabasePictureOfDay>
-        get() = _pictureOfDay
-
-
-
-    fun getMostRecentPictureFromDatabase(): LiveData<String> {
-        val getUrl = imageDb.getPictureOfDay().map { it.asDomainModelPicture().url}
-        return getUrl
+        _pictureOfDay.value = getImageBack
     }
-    suspend fun insertPictureInDatabase(databasePictureOfDay: DatabasePictureOfDay) {
-    withContext(Dispatchers.IO) {
-       imageDb.insertPOD(databasePictureOfDay.asDomainModelPicture())
+
+    private suspend fun getAsteroidFromDatabase() {
+        withContext(Dispatchers.IO) {
+            val gettingAsteroids = dataBase.getAllSavedAsteroids()
+            getListBack = gettingAsteroids.asDomainModel()
+        }
+        _parseData.value = getListBack
     }
+
+    suspend fun insertPictureInDatabase(pictureOfDayEntity: PictureOfDayEntity) {
+        withContext(Dispatchers.IO) {
+            imageDb.insertPOD(pictureOfDayEntity)
+        }
     }
 
     private suspend fun insertAll(networkAsteroidList: List<Asteroid>) {
@@ -111,16 +102,6 @@ class MainViewModel(
             dataBase.insertAll(*networkAsteroidList.asDatabaseModel())
         }
     }
-
-    private suspend fun getAsteroidFromDatabase(){
-        withContext(Dispatchers.IO) {
-            val gettingIt = dataBase.getAllSavedAsteroids()
-            getListBack = gettingIt.asDomainModel()
-            //Log.d(TAG, "data base get ${getListBack}")
-        }
-        _dome.value = getListBack
-    }
-
     /**
      * Return a new [ImageLoader].
      */
@@ -129,11 +110,4 @@ class MainViewModel(
             .crossfade(true)
             .build()
     }
-//    private suspend fun getBitmap(pictureOfDay: PictureEntity): Bitmap {
-//        val request = ImageRequest.Builder(getApplication())
-//            .data(pictureOfDay.url)
-//            .build()
-//        val result = (newImageLoader().execute(request) as SuccessResult).drawable
-//        return (result as BitmapDrawable).bitmap
-//    }
 }

@@ -8,23 +8,18 @@
         <variable
             name="asteroid"
             type="com.udacity.asteroidradar.Asteroid" />
-        <variable
-            name="clickListener"
-            type="com.udacity.asteroidradar.main.AsteroidItemsAdapter.AsteroidListener" />
+
         <variable
             name="viewModel"
             type="com.udacity.asteroidradar.main.MainViewModel" />
 
-
     </data>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:padding="16dp"
-        android:onClick="@{() -> clickListener.onClick(asteroid)}">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/name"
@@ -32,7 +27,7 @@
             android:layout_height="wrap_content"
             android:text="@{asteroid.codename}"
             android:textColor="@color/default_text_color"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/imageStatus"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +42,7 @@
             android:layout_marginTop="8dp"
             android:text="@{asteroid.closeApproachDate}"
             android:textColor="@color/text_grey"
-            android:textSize="18sp"
+            android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@id/imageStatus"
             app:layout_constraintStart_toStartOf="parent"

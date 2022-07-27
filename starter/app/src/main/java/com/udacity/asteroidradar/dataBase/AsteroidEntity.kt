@@ -3,7 +3,6 @@ package com.udacity.asteroidradar.dataBase
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.squareup.moshi.Json
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
 
@@ -32,8 +31,9 @@ data class AsteroidEntity constructor(
     val distanceFromEarth: Double,
 
     @ColumnInfo(name = "isPotentially_hazardous")
-    val isPotentiallyHazardous: Boolean
+    val isPotentiallyHazardous: Boolean,
 )
+
 fun List<AsteroidEntity>.asDomainModel(): List<Asteroid> {
     return map {
         Asteroid(
@@ -48,21 +48,20 @@ fun List<AsteroidEntity>.asDomainModel(): List<Asteroid> {
         )
     }
 }
-@Entity
-data class DatabasePictureOfDay(
+
+@Entity(tableName = "imagedDb")
+data class PictureOfDayEntity(
     @PrimaryKey
     val url: String,
     val date: String,
     val title: String,
 )
-
-
 //convert db object to domain object
-fun DatabasePictureOfDay.asDomainModelPicture(): DatabasePictureOfDay {
-    return DatabasePictureOfDay(
+fun PictureOfDayEntity.asDomainModelPicture(): PictureOfDay {
+    return PictureOfDay(
         //mediaType = this.mediaType,
         title = this.title,
         url = this.url,
-        date = this.date
+        date = this.date,
     )
 }

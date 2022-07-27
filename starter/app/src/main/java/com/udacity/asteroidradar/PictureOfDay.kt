@@ -1,7 +1,5 @@
 package com.udacity.asteroidradar
 
-import com.squareup.moshi.Json
-
 data class PictureOfDay(
     val date: String,
     //@Json(name = "media_type") val mediaType: String,
@@ -9,9 +7,6 @@ data class PictureOfDay(
     val url: String
 ) {
     override fun toString(): String {
-        return "PictureOfDay(date='$date', " +
-                //"mediaType='$mediaType', " +
-                "title='$title', url='$url')"
+        return "PictureOfDay(date='$date', title='$title', url='$url')"
     }
-
 }

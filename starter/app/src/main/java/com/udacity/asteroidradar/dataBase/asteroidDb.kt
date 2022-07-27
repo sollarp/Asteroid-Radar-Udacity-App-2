@@ -5,22 +5,18 @@ package com.udacity.asteroidradar.dataBase
 // Change version number if schema updated
 
 import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.room.*
 
 
 @Database(
     entities = [
         AsteroidEntity::class,
-        DatabasePictureOfDay::class
-               ],
-        version = 1,
+        PictureOfDayEntity::class],
+    version = 1,
 )
 abstract class AsteroidDb : RoomDatabase() {
     abstract val asteroidDao: AsteroidDao
     abstract val imageDao: ImageDao
-
-
 
     companion object {
         @Volatile

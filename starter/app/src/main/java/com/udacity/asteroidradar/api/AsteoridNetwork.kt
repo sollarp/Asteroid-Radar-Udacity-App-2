@@ -17,14 +17,6 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(Constants.BASE_URL)
     .build()
 
-/*
-private var retrofit: Retrofit = Retrofit.Builder()
-    .baseUrl(Constants.BASE_URL)
-    .addConverterFactory(ScalarsConverterFactory.create())
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
-*/
-
 object MarsApi {
     val retrofitService: AsteroidApi by lazy {
         retrofit.create(AsteroidApi::class.java)
